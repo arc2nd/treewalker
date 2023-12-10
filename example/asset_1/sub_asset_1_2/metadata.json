@@ -1,0 +1,11 @@
+{
+    "name": "sub_asset_1_2", 
+    "skin": "future", 
+    "type": "rig", 
+    "position": [
+        1.2, 
+        1.2, 
+        1.2
+    ], 
+    "parent": "asset_1"
+}

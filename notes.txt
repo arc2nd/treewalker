@@ -1,0 +1,58 @@
+# install boost: https://stackoverflow.com/a/24086375
+wget -O boost_1_83_0.tar.gz https://sourceforge.net/projects/boost/files/boost/1.83.0/boost_1.83_0.tar.gz/download
+tar xzvf boost_1_83_0.tar.gz
+cd boost_1_83_0/
+
+sudo apt-get install build-essential g++ python-dev autotools-dev libicu-dev libbz2-dev libboost-all-dev
+
+./bootstrap.sh --prefix=/usr/
+./b2
+
+=======
+The Boost C++ Libraries were successfully built!
+
+The following directory should be added to compiler include paths:
+
+    /home/james/Downloads/boost_1_83_0
+
+The following directory should be added to linker library paths:
+
+    /home/james/Downloads/boost_1_83_0/stage/lib
+=======
+
+
+sudo ./b2 install
+
+=====
+should now live in /usr/include/boost/
+=====
+
+
+sudo apt-get install libboost-all-dev
+
+
+
+
+# to compile
+g++ -o <output name> <cpp file to compile>
+g++ -o walkit treewalker.cpp -lboost_filesystem -lboost_system -lboost_regex
+
+#-l switches add links to precompiled libraries
+
+
+
+
+# treewalking: 
+
+
+# reading files: https://stackoverflow.com/a/2602060
+
+
+# loading json: https://www.boost.org/doc/libs/1_75_0/libs/json/doc/html/json/examples.html
+
+
+# setting up sqlite3: 
+    sudo apt install libsqlite3-dev 
+    making the db: https://www.tutorialspoint.com/sqlite/sqlite_c_cpp.htm
+
+# pushing to sqlite3: 

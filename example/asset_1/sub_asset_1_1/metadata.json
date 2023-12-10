@@ -1,0 +1,11 @@
+{
+    "name": "sub_asset_1_1", 
+    "skin": "mirror", 
+    "type": "rig", 
+    "position": [
+        1.0, 
+        1.0, 
+        1.0
+    ], 
+    "parent": "asset_1"
+}
