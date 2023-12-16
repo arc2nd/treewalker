@@ -89,42 +89,56 @@ void create_db(const char* file_path)
 
 // a function to formulate the sql statement to make the metadata table
 // TODO: Replace the hardcoded table name with a variable
-char make_table()
+const char * make_table()
 {
-    char *sql;
+    const char *sql;
 
-    sql = "CREATE TABLE metadata(" \
-          "ID INT PRIMARY KEY  NOT NULL, " \
-          "NAME           TEXT NOT NULL, " \
-          "SKIN           TEXT NOT NULL, " \
-          "TYPE           TEXT NOT NULL, " \
-          "POSITION       TEXT, " \
+    sql = "CREATE TABLE metadata("
+          "ID INT PRIMARY KEY NOT NULL, "
+          "NAME           TEXT NOT NULL, "
+          "SKIN           TEXT NOT NULL, "
+          "TYPE           TEXT NOT NULL, "
+          "POSITION       TEXT, "
           "PARENT         TEXT);";
-    return *sql;
+    return sql;
 }
 
 // a function to forumulate the sql statement to insert a row into the metadata table
 // TODO: This statement is still not correct
 // TODO: Call using the struct instead of a bunch of strings
-char insert(std::string name, std::string skin, std::string type, std::string position, std::string parent)
+const char * insert(std::string name, std::string skin, std::string type, std::string position, std::string parent)
 {
-    char *sql;
+    const char *sql;
+    const char *char_name = name.c_str();
+    const char *char_skin = skin.c_str();
+    const char *char_type = type.c_str();
+    const char *char_position = position.c_str();
+    const char *char_parent = parent.c_str();
 
-    sql = "INSERT INTO METADATA (ID, NAME, SKIN, TYPE, POSITION, PARENT) "\
-          "VALUES (NULL, name, skin, type, position, parent);";
-    return *sql;
+    sql = "INSERT INTO METADATA (ID, NAME, SKIN, TYPE, POSITION, PARENT) "
+          "VALUES (NULL, ", char_name, ", ", char_skin, ", ", char_type, ", ", char_position, ", ", char_parent, ");";
+    return sql;
 }
 
 // process an SQL statement into the sqlite3 database
-// TODO: The particularly needs error checking to make sure statements work properly
-void process_stmt(const char* file_path, const char & sql_stmt)
+// TODO: This particularly needs error checking to make sure statements work properly
+int process_stmt(const char* file_path, const char* sql_stmt)
 {
     sqlite3 *db;
     char *zErrMsg = 0;
     int rc;
     rc = sqlite3_open(file_path, &db);
 
-    rc = sqlite3_exec(db, &sql_stmt, callback, 0, &zErrMsg);
+    rc = sqlite3_exec(db, sql_stmt, callback, 0, &zErrMsg);
+
+    if( rc != SQLITE_OK ){
+      fprintf(stderr, "SQL error: %s\n", zErrMsg);
+      sqlite3_free(zErrMsg);
+   } else {
+      fprintf(stdout, "Records created successfully\n");
+   }
+   sqlite3_close(db);
+   return 0;
 }
 
 // TODO: load the json values into the struct and then call the insert statement using that struct
@@ -136,10 +150,12 @@ int main(int argc, char* argv[])
     if (argc > 1)
     {
         db_name = argv[1];
-    } // enf if more than one argument
-    std::cout << db_name << std::endl;
-    char make_table_stmt = make_table();
-    process_stmt(db_name, make_table_stmt);
+    } // end if more than one argument
+
+    // Make the metadata table
+    const char *make_table_stmt = make_table();
+    int result;
+    result = process_stmt(db_name, make_table_stmt);
 
     fs::path current_dir(".");  // start hunting at our current path
     boost::regex pattern("(.*\\.json)");  // regex pattern for *.json files
@@ -151,8 +167,8 @@ int main(int argc, char* argv[])
         {
             // here's where you insert the fun stuff that you're going to do with 
             // the file that you've found
-            std::cout << file_path << std::endl;
-            //std::cout << "    " << file_size(iter->path()) << std::endl;
+            // std::cout << file_path << std::endl;
+            // std::cout << "    " << file_size(iter->path()) << std::endl;
 
             // open the file and read it into a string
             std::string contents; // the empty string used to store the contents
@@ -168,8 +184,19 @@ int main(int argc, char* argv[])
                 {
                     // find by specific key
                     auto const& obj = jv.get_object();
-                    // auto name_key = obj.find("name");
+                    auto name_key = obj.find("name");
+                    auto skin_key = obj.find("skin");
+                    auto type_key = obj.find("type");
+                    auto position_key = obj.find("position");
+                    auto parent_key = obj.find("parent");
                     // std::cout << name_key->value() << endl;
+                    const char *insert_stmt = insert(json::value_to<std::string>(name_key->value()), 
+                                                     json::value_to<std::string>(skin_key->value()), 
+                                                     json::value_to<std::string>(type_key->value()), 
+                                                     json::value_to<std::string>(position_key->value()), 
+                                                     json::value_to<std::string>(parent_key->value()));
+                    std::cout << "Insert statement: " << insert_stmt << std::endl;
+                    result = process_stmt(db_name, insert_stmt);
 
                     // iterate over all the keys
                     if (! obj.empty())
@@ -178,7 +205,7 @@ int main(int argc, char* argv[])
                         for (;;)
                         {
                             // here's where you do things with the individual key/value pairs
-                            std::cout << "\t" << json::serialize(it->key()) << " :: " << it->value() << endl;
+                            // std::cout << "\t" << json::serialize(it->key()) << " :: " << it->value() << endl;
                             if (++it == obj.end())
                             {
                                 break;
