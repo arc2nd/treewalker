@@ -1,7 +1,26 @@
+// James Parks
+// 12-16-23
+
+/*
+The intent of this program is to walk a directory structure and look for all .json files
+Any found json files will be opened and read in
+The contents of those files will be parsed into JSON objects
+The data will then be fed into an sqlite3 database file
+
+Other access to the database will probably be through Python
+C++ was chosen for the creation of the database due to speed requirements
+*/
+
+// TODO: The whole things needs some error-checking
+// TODO: The inserts aren't working yet
+
+// 3rd party library includes
 #include "boost/filesystem.hpp"
 #include "boost/regex.hpp"
 #include "boost/json.hpp"
 #include "sqlite3.h"
+
+// std includes
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -10,11 +29,13 @@
 #include <stdlib.h>
 #include <chrono>
 
+// namespaces
 using namespace std::chrono;
 using namespace std;
 namespace fs = boost::filesystem;
 namespace json = boost::json;
 
+// a struct in which we will keep our decoded json metadata
 struct Metadata
 {
     std::string name;
@@ -24,6 +45,7 @@ struct Metadata
     std::string parent;
 };
 
+// the function to read a file into text
 void read_file(std::string const& file_path, std::string & contents)
 {
     std::ifstream this_file (file_path);
@@ -37,6 +59,7 @@ void read_file(std::string const& file_path, std::string & contents)
     }
 }
 
+// not quite sure what this does yet, I copied it directly
 static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
    int i;
    for(i = 0; i<argc; i++) {
@@ -46,6 +69,7 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
    return 0;
 }
 
+// a function to create the sqlite3 database file
 void create_db(const char* file_path)
 {
     sqlite3 *db;
@@ -63,6 +87,8 @@ void create_db(const char* file_path)
     sqlite3_close(db);
 }
 
+// a function to formulate the sql statement to make the metadata table
+// TODO: Replace the hardcoded table name with a variable
 char make_table()
 {
     char *sql;
@@ -77,15 +103,20 @@ char make_table()
     return *sql;
 }
 
+// a function to forumulate the sql statement to insert a row into the metadata table
+// TODO: This statement is still not correct
+// TODO: Call using the struct instead of a bunch of strings
 char insert(std::string name, std::string skin, std::string type, std::string position, std::string parent)
 {
     char *sql;
 
     sql = "INSERT INTO METADATA (ID, NAME, SKIN, TYPE, POSITION, PARENT) "\
-          "VALUES (1, name, skin, type, position, parent);";
+          "VALUES (NULL, name, skin, type, position, parent);";
     return *sql;
 }
 
+// process an SQL statement into the sqlite3 database
+// TODO: The particularly needs error checking to make sure statements work properly
 void process_stmt(const char* file_path, const char & sql_stmt)
 {
     sqlite3 *db;
@@ -96,6 +127,8 @@ void process_stmt(const char* file_path, const char & sql_stmt)
     rc = sqlite3_exec(db, &sql_stmt, callback, 0, &zErrMsg);
 }
 
+// TODO: load the json values into the struct and then call the insert statement using that struct
+// TODO: will have to convert read string for the position value into vector<float>
 int main(int argc, char* argv[])
 {
     auto start = high_resolution_clock::now();

@@ -56,3 +56,4 @@ g++ -o walkit treewalker.cpp -lboost_filesystem -lboost_system -lboost_regex
     making the db: https://www.tutorialspoint.com/sqlite/sqlite_c_cpp.htm
 
 # pushing to sqlite3: 
+    just make sql statements
