@@ -6,10 +6,10 @@ import sqlite3
 
 conn = None
 try:
-    db_path = '../fletch.db'
+    db_path = '../test.db'
     if pathlib.Path(db_path).exists():
-        conn = sqlite3.connect('../fletch.db')
-        sql_query = """SELECT name FROM sqlite_master WHERE type='table';"""
+        conn = sqlite3.connect(db_path)
+        sql_query = "SELECT name FROM sqlite_master WHERE type='table';"
         cursor = conn.cursor()
         cursor.execute(sql_query)
         print(cursor.fetchall())

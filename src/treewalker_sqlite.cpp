@@ -5,12 +5,24 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 #include <stdio.h>
 #include <stdlib.h>
+#include <chrono>
 
+using namespace std::chrono;
 using namespace std;
 namespace fs = boost::filesystem;
 namespace json = boost::json;
+
+struct Metadata
+{
+    std::string name;
+    std::string skin;
+    std::string type;
+    std::vector<float> position;
+    std::string parent;
+};
 
 void read_file(std::string const& file_path, std::string & contents)
 {
@@ -55,12 +67,12 @@ char make_table()
 {
     char *sql;
 
-    sql = "CREATE TABLE METADATA(" \
-          "ID INT PRIMARY KEY  NOT NULL, "\
-          "NAME           TEXT NOT NULL, "\
-          "SKIN           TEXT NOT NULL, "\
-          "TYPE,          TEXT NOT NULL"\
-          "POSITION,      TEXT, "\
+    sql = "CREATE TABLE metadata(" \
+          "ID INT PRIMARY KEY  NOT NULL, " \
+          "NAME           TEXT NOT NULL, " \
+          "SKIN           TEXT NOT NULL, " \
+          "TYPE           TEXT NOT NULL, " \
+          "POSITION       TEXT, " \
           "PARENT         TEXT);";
     return *sql;
 }
@@ -86,6 +98,7 @@ void process_stmt(const char* file_path, const char & sql_stmt)
 
 int main(int argc, char* argv[])
 {
+    auto start = high_resolution_clock::now();
     const char* db_name = "test.db";
     if (argc > 1)
     {
@@ -122,7 +135,7 @@ int main(int argc, char* argv[])
                 {
                     // find by specific key
                     auto const& obj = jv.get_object();
-                    auto name_key = obj.find("name");
+                    // auto name_key = obj.find("name");
                     // std::cout << name_key->value() << endl;
 
                     // iterate over all the keys
@@ -144,6 +157,7 @@ int main(int argc, char* argv[])
             } // end switch
         } // end if regex
     } // end for recursive directory iterator: looking for files
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+    cout << duration.count() << endl;
 } // end main
-
-

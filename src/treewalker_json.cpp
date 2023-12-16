@@ -1,11 +1,12 @@
 #include "boost/filesystem.hpp"
 #include "boost/regex.hpp"
 #include "boost/json.hpp"
-// #include "boost/json/src.hpp"
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <chrono>
 
+using namespace std::chrono;
 using namespace std;
 namespace fs = boost::filesystem;
 namespace json = boost::json;
@@ -23,11 +24,9 @@ void read_file(std::string & file_path, std::string & contents)
     }
 }
 
-
-
-
 int main()
 {
+    auto start = high_resolution_clock::now();
     fs::path current_dir(".");  // start hunting at our current path
     boost::regex pattern("(.*\\.json)");  // regex pattern for *.json files
     for (fs::recursive_directory_iterator iter(current_dir), end; iter !=end; ++iter)
@@ -55,8 +54,8 @@ int main()
                 {
                     // find by specific key
                     auto const& obj = jv.get_object();
-                    auto name_key = obj.find("name");
-                    std::cout << name_key->value() << endl;
+                    // auto name_key = obj.find("name");
+                    // std::cout << name_key->value() << endl;
 
                     // iterate over all the keys
                     if (! obj.empty())
@@ -80,6 +79,9 @@ int main()
 
         }
     }
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+    cout << duration.count() << endl;
 }
 
 
