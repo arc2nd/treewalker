@@ -1,11 +1,11 @@
 {
-    "name": "asset_3", 
+    "name": "asset_8",
     "skin": "base", 
     "type": "rig", 
     "position": [
-        3.0, 
-        3.0, 
-        3.0
+        8.0,
+        8.0,
+        8.0
     ], 
     "parent": null
 }

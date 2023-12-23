@@ -42,6 +42,7 @@ def timer(f):
         return value
     return wrapper_time
 
+# TODO: I have an error in here somewhere that makes it run twice.
 def walkit(start_dir:str = '', db_name:str = 'test.db'):
     conn = sqlite3.connect(db_name)
     make_table_stmt = make_table(table_name='metadata')
@@ -60,8 +61,8 @@ def walkit(start_dir:str = '', db_name:str = 'test.db'):
                 process_stmt(file_path=db_name, sql_stmt=insert_stmt)
                 for key in contents:
                     print(f'\t{key} :: {contents[key]}')
-            for this_dir in dirs:
-                walkit(start_dir=this_dir)
+            # for this_dir in dirs:
+            #     walkit(start_dir=this_dir)
 
 @timer
 def main():
