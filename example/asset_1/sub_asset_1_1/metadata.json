@@ -3,9 +3,9 @@
     "skin": "mirror", 
     "type": "rig", 
     "position": [
-        1.0, 
-        1.0, 
-        1.0
+        1.1, 
+        1.1, 
+        1.1
     ], 
     "parent": "asset_1"
 }

@@ -3,9 +3,9 @@
     "skin": "base", 
     "type": "rig", 
     "position": [
-        0.0, 
-        0.0, 
-        0.0
+        1.0, 
+        1.0, 
+        1.0
     ], 
     "parent": null
 }
