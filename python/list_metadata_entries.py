@@ -6,7 +6,7 @@ import sqlite3
 
 conn = None
 try:
-    db_path = '../test.db'
+    db_path = 'test.db'
     if pathlib.Path(db_path).exists():
         conn = sqlite3.connect(db_path)
         sql_query = "SELECT * FROM metadata;"
